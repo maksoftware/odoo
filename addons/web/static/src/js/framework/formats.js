@@ -48,7 +48,7 @@ function format_value (value, descriptor, value_if_empty) {
         case 'monetary':
         case 'float':
         case 'field_float_scannable':
-            var digits = descriptor.digits ? descriptor.digits : [69,2];
+            var digits = descriptor.digits ? descriptor.digits : [69,3];
             digits = typeof digits === "string" ? py.eval(digits) : digits;
             var precision = digits[1];
             var formatted = _.str.sprintf('%.' + precision + 'f', value).split('.');
