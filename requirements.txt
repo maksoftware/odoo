@@ -45,7 +45,7 @@ fpdf
 typing
 simpleeval
 num2words
-enum
+enum34
 Pillow
 reportbro-lib==1.6.0
 arabic-reshaper[with-fonttools]
