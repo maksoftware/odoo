@@ -46,7 +46,7 @@ class StockMove(models.Model):
     ordered_qty = fields.Float('Ordered Quantity', digits=dp.get_precision('Product Unit of Measure'))
     product_qty = fields.Float(
         'Real Quantity', compute='_compute_product_qty', inverse='_set_product_qty',
-        digits=0, store=True,
+        store=True,
         help='Quantity in the default UoM of the product')
     product_uom_qty = fields.Float(
         'Quantity',
@@ -156,8 +156,7 @@ class StockMove(models.Model):
     @api.depends('product_id', 'product_uom', 'product_uom_qty')
     def _compute_product_qty(self):
         if self.product_uom:
-            rounding_method = self._context.get('rounding_method', 'UP')
-            self.product_qty = self.product_uom._compute_quantity(self.product_uom_qty, self.product_id.uom_id, rounding_method=rounding_method)
+            self.product_qty = self.product_uom._compute_quantity(self.product_uom_qty, self.product_id.uom_id)
 
     def _set_product_qty(self):
         """ The meaning of product_qty field changed lately and is now a functional field computing the quantity

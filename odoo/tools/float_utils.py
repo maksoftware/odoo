@@ -11,6 +11,19 @@ def _float_check_precision(precision_digits=None, precision_rounding=None):
         return 10 ** -precision_digits
     return precision_rounding
 
+def get_number_decimal_places(number):
+    res, number = 0, abs(number)
+    while (number * 10 ** res - int(number * 10 ** res)) > 0 and res < 32:
+        res += 1
+    return res
+
+def float_truncate(number, digits):
+    number_decimals = get_number_decimal_places(number)
+    if number_decimals <= digits:
+        return number
+    stepper = 10.0 ** digits
+    return math.trunc(stepper * number) / stepper
+
 def float_round(value, precision_digits=None, precision_rounding=None, rounding_method='HALF-UP'):
     """Return ``value`` rounded to ``precision_digits`` decimal digits,
        minimizing IEEE-754 floating point representation errors, and applying
@@ -52,6 +65,14 @@ def float_round(value, precision_digits=None, precision_rounding=None, rounding_
     normalized_value = value / rounding_factor # normalize
     epsilon_magnitude = math.log(abs(normalized_value), 2)
     epsilon = 2**(epsilon_magnitude-53)
+    if rounding_method == None:
+        len_rounding_factor = get_number_decimal_places(rounding_factor)
+        len_value = get_number_decimal_places(value)
+        if len_rounding_factor > len_value:
+            return float_truncate(value, 15)
+        else:
+            return normalized_value * rounding_factor
+
     if rounding_method == 'HALF-UP':
         normalized_value += cmp(normalized_value,0) * epsilon
         rounded_value = round(normalized_value) # round to integer
