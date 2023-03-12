@@ -451,11 +451,12 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def unlink(self):
-        for invoice in self:
-            if invoice.state not in ('draft', 'cancel'):
-                raise UserError(_('You cannot delete an invoice which is not draft or cancelled. You should refund it instead.'))
-            elif invoice.move_name:
-                raise UserError(_('You cannot delete an invoice after it has been validated (and received a number). You can set it back to "Draft" state and modify its content, then re-confirm it.'))
+        if not self._context.get('force_delete'):
+            for invoice in self:
+                if invoice.state not in ('draft', 'cancel'):
+                    raise UserError(_('You cannot delete an invoice which is not draft or cancelled. You should refund it instead.'))
+                elif invoice.move_name:
+                    raise UserError(_('You cannot delete an invoice after it has been validated (and received a number). You can set it back to "Draft" state and modify its content, then re-confirm it.'))
         return super(AccountInvoice, self).unlink()
 
     @api.onchange('invoice_line_ids')
