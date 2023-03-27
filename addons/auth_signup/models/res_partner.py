@@ -36,9 +36,9 @@ class ResPartner(models.Model):
     @api.depends('signup_token', 'signup_expiration')
     def _compute_signup_valid(self):
         dt = now()
-        for partner in self.sudo():
-            partner.signup_valid = bool(partner.signup_token) and \
-            (not partner.signup_expiration or dt <= partner.signup_expiration)
+        for partner, partner_sudo in zip(self, self.sudo()):
+            partner.signup_valid = bool(partner_sudo.signup_token) and \
+                                   (not partner_sudo.signup_expiration or dt <= partner_sudo.signup_expiration)
 
     @api.multi
     def _compute_signup_url(self):
