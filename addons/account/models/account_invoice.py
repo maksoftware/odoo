@@ -937,6 +937,12 @@ class AccountInvoice(models.Model):
     def line_get_convert(self, line, part):
         return self.env['product.product']._convert_prepared_anglosaxon_line(line, part)
 
+    def _allow_delete_move(self):
+        return True
+
+    def _cancel_update_move_values(self):
+        return {'state': 'cancel', 'move_id': False}
+
     @api.multi
     def action_cancel(self):
         moves = self.env['account.move']
@@ -947,14 +953,16 @@ class AccountInvoice(models.Model):
                 raise UserError(_('You cannot cancel an invoice which is partially paid. You need to unreconcile related payment entries first.'))
 
         # First, set the invoices as cancelled and detach the move ids
-        self.write({'state': 'cancel', 'move_id': False})
+        vals = self._cancel_update_move_values()
+        self.write(vals)
         if moves:
             # second, invalidate the move(s)
             moves.button_cancel()
             # delete the move this invoice was pointing to
             # Note that the corresponding move_lines and move_reconciles
             # will be automatically deleted too
-            moves.unlink()
+            if self._allow_delete_move():
+                moves.unlink()
         return True
 
     ###################
