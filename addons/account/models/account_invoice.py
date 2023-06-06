@@ -937,9 +937,6 @@ class AccountInvoice(models.Model):
     def line_get_convert(self, line, part):
         return self.env['product.product']._convert_prepared_anglosaxon_line(line, part)
 
-    def _allow_delete_move(self):
-        return True
-
     def _cancel_update_move_values(self):
         return {'state': 'cancel', 'move_id': False}
 
@@ -961,8 +958,7 @@ class AccountInvoice(models.Model):
             # delete the move this invoice was pointing to
             # Note that the corresponding move_lines and move_reconciles
             # will be automatically deleted too
-            if self._allow_delete_move():
-                moves.unlink()
+            moves.unlink()
         return True
 
     ###################
