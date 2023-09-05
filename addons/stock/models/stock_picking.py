@@ -184,11 +184,12 @@ class Picking(models.Model):
         help="It specifies goods to be deliver partially or all at once")
 
     state = fields.Selection([
-        ('draft', 'Draft'), ('cancel', 'Cancelled'),
+        ('draft', 'Draft'),
         ('waiting', 'Waiting Another Operation'),
         ('confirmed', 'Waiting Availability'),
         ('partially_available', 'Partially Available'),
-        ('assigned', 'Available'), ('done', 'Done')], string='Status', compute='_compute_state',
+        ('assigned', 'Available'), ('done', 'Done'),
+        ('cancel', 'Cancelled')], string='Status', compute='_compute_state',
         copy=False, index=True, readonly=True, store=True, track_visibility='onchange',
         help=" * Draft: not confirmed yet and will not be scheduled until confirmed\n"
              " * Waiting Another Operation: waiting for another move to proceed before it becomes automatically available (e.g. in Make-To-Order flows)\n"
